@@ -18,6 +18,16 @@ app.set("port", 3000);
 app.use(morgan('dev'));
 app.use(parser.json());
 
+app.use(function(req,res, next) {
+  res.set({
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, Content-Length, X-Requested-With',
+    'Content-Type': 'application/json'
+  });
+  next();
+});
+
 // Set up our routes
 app.use("/classes", router);
 
