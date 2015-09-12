@@ -1,6 +1,6 @@
 var App = function() {
   this.username = URI(window.location.href).search(true).username;
-  this.server = 'http://localhost:3000/classes/messages';
+  this.server = 'http://localhost:3000/classes';
   this.rooms = [];
   this.currentRoom = 'all';
   this.friends = [];
@@ -9,12 +9,24 @@ var App = function() {
 App.prototype.init = function() {
   //fetch message data periodically
   var self = this;
+  // get /classes/users/username
+  $.ajax({
+    url: this.server + '/users/' + self.username,
+    type: 'GET',
+    contentType: 'application/json',
+    success: function(data){
+      self.user = data;
+    },
+    error: function(data){
+      console.log('failure to fetch username/ get it together');
+    }
+  })
   setInterval(self.fetch.bind(self), 500);
 };
 
 App.prototype.send = function(message) {
   $.ajax({
-    url: this.server,
+    url: this.server + '/messages',
     type: 'POST',
     data: JSON.stringify(message),
     contentType: 'application/json',
@@ -28,7 +40,7 @@ App.prototype.send = function(message) {
 App.prototype.fetch = function() {
   var self = this;
   $.ajax({
-    url: this.server,
+    url: this.server + '/messages',
     type: 'GET',
     contentType: 'application/json',
     success: function(data) {
@@ -64,7 +76,7 @@ App.prototype.addMessage = function(message) {
   if (message.roomname === this.currentRoom || this.currentRoom === 'all') {
     var $li = $('<li><span id="username"></span>:<br /><span id="body"></span></li>');
     //using stringjs lib to escape html comments
-    $li.children('#username').text(this.sanitizeString(message.username));
+    $li.children('#username').text(this.sanitizeString(message.User.name));
     $li.children('#body').text(this.sanitizeString(message.body));
     $li.children('span#username').on('click', function(e) {
       app.addFriend.call(app, e);
@@ -88,11 +100,11 @@ App.prototype.addRoom = function(roomname) {
     roomname: app.currentRoom
   }]);
 
-  app.send({
-    username: "chatterbox",
-    body: "Welcome to " + app.currentRoom + "!",
-    roomname: app.currentRoom
-  });
+  // app.send({
+  //   username: "chatterbox",
+  //   body: "Welcome to " + app.currentRoom + "!",
+  //   roomname: app.currentRoom
+  // });
 
   $('#main form#roomName input[type=text]').val('');
   $('#roomSelect').val(app.currentRoom);  
@@ -107,7 +119,7 @@ App.prototype.handleSubmit = function(e) {
   e.preventDefault();
 
   app.send({
-    username: app.username,
+    UserId: app.user.id,
     body: $('#main form#message input[type=text]').val(),
     roomname: app.currentRoom
   });

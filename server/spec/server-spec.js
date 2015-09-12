@@ -35,7 +35,7 @@ describe("Persistent Node Chat Server", function() {
       request({ method: "POST",
               uri: "http://127.0.0.1:3000/classes/messages",
               json: {
-                username: "Valjean",
+                UserId: body.insertId,
                 body: "In mercy's name, three days is all I need.",
                 roomname: "Hello"
               }
@@ -68,7 +68,7 @@ describe("Persistent Node Chat Server", function() {
     // here depend on the schema you design, so I'll leave
     // them up to you. */
 
-    var queryString = "INSERT INTO messages (body, username, roomname) VALUES ('Men like you can never change!','Valjean','main');";
+    var queryString = "INSERT INTO messages (body, UserId, roomname) VALUES ('Men like you can never change!', (SELECT id from Users WHERE name = 'Valjean' LIMIT 1), 'main');";
     var queryArgs = [];
 
     dbConnection.query(queryString, queryArgs, function(err) {

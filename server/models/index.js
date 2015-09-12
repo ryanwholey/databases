@@ -1,6 +1,18 @@
 var Sequelize = require('sequelize');
 var db = require('../db');
 
+var User = db.define('User', {
+    name: Sequelize.STRING,
+  }, {timestamps: false});
+
+var Message = db.define('Message',{
+    body: Sequelize.STRING,
+    roomname: Sequelize.STRING
+  }, {timestamps: false});
+
+Message.belongsTo(User);
+User.hasMany(Message);
+
 module.exports = {
   // messages: {
   //   get: function (cb) {
@@ -17,15 +29,9 @@ module.exports = {
   //   } // a function which can be used to insert a message into the database
   // },
 
-  messages: db.define('Message',{
-    body: Sequelize.STRING,
-    username: Sequelize.STRING,
-    roomname: Sequelize.STRING
-  }, {timestamps: false}),
+  users: User,
 
-  users: db.define('User', {
-    name: Sequelize.STRING
-  }, {timestamps: false}),
+  messages: Message,
 
   db: db
   // users: {
