@@ -18,7 +18,7 @@ app.set("port", 3000);
 app.use(morgan('dev'));
 app.use(parser.json());
 
-app.use(function(req,res, next) {
+app.use('/classes', function(req,res, next) {
   res.set({
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,OPTIONS',
@@ -26,6 +26,12 @@ app.use(function(req,res, next) {
     'Content-Type': 'application/json'
   });
   next();
+});
+
+app.use(express.static('client'));
+
+app.get('/', function(req, res) {
+  res.redirect('/index.html');
 });
 
 // Set up our routes
